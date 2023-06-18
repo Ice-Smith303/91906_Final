@@ -5,13 +5,13 @@ import tkinter as tk
 from tkinter import *
 from tkmacosx import Button
 
-DEFAULT_FONT_STYLE = ("Arial", 20)
+DEFAULT_FONT_STYLE = ("Arial", 24)
 LARGE_FONT = ("Arial", 40, "bold")
 SMALL_FONT = ("Arial", 16)
 DIGITS_FONT = ("Arial", 24, "bold")
 
 WHITE = "#FFFFFF"
-OFF_WHITE = "#F8FAFF"
+CREAM = "#F8FAFF"
 LABEL_COLOUR = "#25265E"
 LIGHT_GRAY = "#F5F5F5"
 LIGHT_BLUE = "#CCEDFF"
@@ -35,20 +35,21 @@ class Calculator:
             1: (3, 1), 2: (3, 2), 3: (3, 3),
             0: (4, 2), '.': (4, 1)
         }
-        self.operations = {"/": "\u00F7", "*": "\u00D7", "-": "-", "+": "+"}
+        self.operations = {"/": "\u00F7", "*": "\u00D7", "-": "\u2212", "+": "+"}
 
         self.buttons_frame.rowconfigure(0, weight=1)
         for x in range(1,5):
             self.buttons_frame.rowconfigure(x, weight=1)
             self.buttons_frame.columnconfigure(x, weight=1)
 
+        self.create_buttons()
+
+    def create_buttons(self):
         self.create_digit_buttons()
         self.create_operator_buttons()
-        self.create_special_buttons()
-
-    def create_special_buttons(self):
         self.create_clear_button()
         self.create_equals_button()
+
     def create_display_frame(self):
         frame=tk.Frame(self.root, bg=LIGHT_GRAY)
         frame.grid(columnspan=4, sticky="nsew")
@@ -66,45 +67,39 @@ class Calculator:
         sum_label = tk.Label(self.display_frame, text=self.sum_expression, anchor=tk.E,
                              bg=LIGHT_GRAY, fg=LABEL_COLOUR,padx=24, font=SMALL_FONT)
         sum_label.grid(sticky="e")
+
         label = tk.Label(self.display_frame, text=self.current_expression,
                              bg=LIGHT_GRAY, fg=LABEL_COLOUR,padx=24, font=LARGE_FONT)
         label.grid(sticky="e")
 
         return(sum_label,label)
 
-
-
-
-        # Entry Field
-        self.entry_field = tk.Entry(self.root, font=("Helvetica", 20), justify="right")
-        self.entry_field.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
-
-        # Buttons
-
     def create_operator_buttons(self):
         i = 0
         for operator, symbol in self.operations.items():
-            button = tk.Button(self.buttons_frame, text=symbol, bg=OFF_WHITE, fg=LABEL_COLOUR, font=DEFAULT_FONT_STYLE,
-                               borderwidth=0)
+            button = tk.Button(self.buttons_frame, text=symbol, highlightbackground=CREAM,
+                               fg=LABEL_COLOUR, font=DIGITS_FONT,borderwidth=1)
             button.grid(row=i, column=4, sticky=tk.NSEW)
             i += 1
+
     def create_digit_buttons(self):
         for digit, grid_value in self.digits.items():
-            button = tk.Button(self.buttons_frame, text=str(digit), bg=WHITE, fg=LABEL_COLOUR, font=DIGITS_FONT,
-                               borderwidth=0)
+            button = tk.Button(self.buttons_frame, text=str(digit), highlightbackground=WHITE,
+                               fg=LABEL_COLOUR, font=DIGITS_FONT,borderwidth=1)
             button.grid(row=grid_value[0], column=grid_value[1], sticky=tk.NSEW)
 
     def create_clear_button(self):
-        button = tk.Button(self.buttons_frame, text="C", bg=WHITE, fg=LABEL_COLOUR, font=DIGITS_FONT,
-                           borderwidth=0)
+        button = tk.Button(self.buttons_frame, text="C", highlightbackground=WHITE,
+                           fg=LABEL_COLOUR, font=DIGITS_FONT,borderwidth=1)
         button.grid(row=0, column=1, columnspan=3, sticky=tk.NSEW)
 
     def create_equals_button(self):
-        button = tk.Button(self.buttons_frame, text="=", bg=LIGHT_BLUE, fg=LABEL_COLOUR, font=DIGITS_FONT,
-                           borderwidth=0)
+        button = tk.Button(self.buttons_frame, text="=", highlightbackground=LIGHT_BLUE,
+                           fg=LABEL_COLOUR, font=DIGITS_FONT,borderwidth=0)
         button.grid(row=4, column=3, columnspan=2, sticky=tk.NSEW)
 
 root = tk.Tk()
+root.attributes('-alpha',0.95)
 root.columnconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
 root.rowconfigure(0, weight=1)
