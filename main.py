@@ -3,6 +3,7 @@
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import *
+from tkmacosx import Button
 
 DEFAULT_FONT_STYLE = ("Arial", 20)
 LARGE_FONT = ("Arial", 40, "bold")
@@ -18,19 +19,15 @@ class Calculator:
     def __init__(self, root):
         self.root = root
         self.root.title("Calculator")
-        self.root.geometry("400x600")
-        self.root.resizable(1, 1)
+        self.root.geometry("300x600")
+        self.root.resizable(0, 0)
         self.root.configure(background="white")
 
         self.sum_expression = "0"
         self.current_expression = "0"
         self.display_frame=self.create_display_frame()
-
         self.sum_label, self.label = self.create_display_labels()
-
-        self.display_frame = self.create_display_frame()
         self.buttons_frame = self.create_buttons_frame()
-        self.create_special_buttons()
 
         self.digits = {
             7: (1, 1), 8: (1, 2), 9: (1, 3),
@@ -40,31 +37,38 @@ class Calculator:
         }
         self.operations = {"/": "\u00F7", "*": "\u00D7", "-": "-", "+": "+"}
 
+        self.buttons_frame.rowconfigure(0, weight=1)
+        for x in range(1,5):
+            self.buttons_frame.rowconfigure(x, weight=1)
+            self.buttons_frame.columnconfigure(x, weight=1)
+
         self.create_digit_buttons()
         self.create_operator_buttons()
+        self.create_special_buttons()
 
     def create_special_buttons(self):
         self.create_clear_button()
         self.create_equals_button()
     def create_display_frame(self):
-        frame=tk.Frame(self.root, height=221, bg="blue")
+        frame=tk.Frame(self.root, bg=LIGHT_GRAY)
         frame.grid(columnspan=4, sticky="nsew")
-
         return(frame)
 
     def create_buttons_frame(self):
-        frame=tk.Frame(self.root)
-        frame.grid(sticky="nsew", columnspan=4)
+        frame=tk.Frame(self.root, bg="green")
+        frame.grid(sticky="nsew")
         return(frame)
 
     def create_display_labels(self):
-        sum_label = tk.Label(self.display_frame, text=self.sum_expression,
+        self.display_frame.columnconfigure(0, weight=1)
+        self.display_frame.rowconfigure(0, weight=1)
+        self.display_frame.rowconfigure(1, weight=1)
+        sum_label = tk.Label(self.display_frame, text=self.sum_expression, anchor=tk.E,
                              bg=LIGHT_GRAY, fg=LABEL_COLOUR,padx=24, font=SMALL_FONT)
-        sum_label.grid(sticky="nsew")
-
+        sum_label.grid(sticky="e")
         label = tk.Label(self.display_frame, text=self.current_expression,
                              bg=LIGHT_GRAY, fg=LABEL_COLOUR,padx=24, font=LARGE_FONT)
-        label.grid(sticky="nsew")
+        label.grid(sticky="e")
 
         return(sum_label,label)
 
@@ -101,6 +105,9 @@ class Calculator:
         button.grid(row=4, column=3, columnspan=2, sticky=tk.NSEW)
 
 root = tk.Tk()
+root.columnconfigure(0, weight=1)
+root.rowconfigure(1, weight=1)
+root.rowconfigure(0, weight=1)
 calculator = Calculator(root)
 root.mainloop()
 
