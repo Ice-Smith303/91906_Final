@@ -27,7 +27,6 @@ class Calculator:
         self.root.minsize(150,350)
 
         # defining data structures
-        self.sum_expression = ""
         self.current_expression = ""
         self.current_expression_base = ""
         self.sum_result = ""
@@ -53,6 +52,8 @@ class Calculator:
         for x in range(1, 5):
             self.buttons_frame.rowconfigure(x, weight=1)
             self.buttons_frame.columnconfigure(x, weight=1)
+
+        self.is_first_press = False
 
     # creates display_frame that will hold display labels.
     def create_display_frame(self):
@@ -83,20 +84,25 @@ class Calculator:
         self.create_equals_button()
 
     def add_to_label(self, value):
-        self.current_expression += str(value)
-        self.current_expression_base += str(value)
-        self.update_label()
+        if not self.is_first_press:
+            self.is_first_press = True
+            self.current_expression_base += str(self.sum_result)
+        self.current_expression += str(value) # adds digit to displayed expression as typing
+        self.current_expression_base += str(value) # adds digit to expression with non unicode operators for math
+        self.update_label() # calls update_label, changes label text to current_expression with fancy unicode
 
     def append_operator(self, symbol, operator):
-        self.current_expression += (" "+symbol+" ")
-        self.current_expression_base += str(self.sum_result)
-        self.current_expression_base += (" "+operator+" ")
-        self.update_sum_label()
+        if not self.is_first_press:
+            self.is_first_press = True
+            self.current_expression_base += str(self.sum_result)  # previous result added to start for math BIMDAS
+
+        self.current_expression += (" "+symbol+" ") # operator added to expression you see as you type (unicode)
+        self.current_expression_base += (" "+operator+" ") #operator added not unicode
         self.update_label()
 
     # Creates display labels that display the summation and the expression on seperate lines.
     def create_display_labels(self):
-        sum_label = tk.Label(self.display_frame, text=self.sum_expression, anchor=tk.E,
+        sum_label = tk.Label(self.display_frame, text=self.current_expression, anchor=tk.E,
                              bg=LIGHT_GRAY, fg=LABEL_COLOUR, padx=24, font=SMALL_FONT)
         sum_label.grid(sticky="e")
 
@@ -134,26 +140,28 @@ class Calculator:
         button.grid(row=4, column=3, columnspan=2, sticky=tk.NSEW)
 
     def equals_button_true(self):
-        self.sum_expression = self.current_expression_base
-        self.sum_result = eval(self.sum_expression)
-        self.current_expression = str(eval(self.sum_expression))
+        self.sum_result = eval(self.current_expression_base)
+        self.current_expression = str(eval(self.current_expression_base))
+        self.update_sum_label()
         self.current_expression_base = ""
         self.update_label()
-        self.update_sum_label()
+        self.is_first_press = False
+
+
+
 
     def clear_button_true(self):
         self.current_expression=""
         self.current_expression_base = ""
-        self.sum_expression=""
         self.sum_result=""
         self.update_label()
         self.update_sum_label()
 
     def update_sum_label(self):
-        self.sum_label.config(text=self.sum_expression)
+        self.sum_label.config(text=self.current_expression_base)
 
     def update_label(self):
-        self.label.config(text=self.current_expression)
+        self.label.config(text=self.current_expression[:11])
 
 root = tk.Tk()  # creating window
 calculator = Calculator(root)  # creating object of class by passing window.
