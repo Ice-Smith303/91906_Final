@@ -20,11 +20,11 @@ class Calculator:
         # initializing and defining window attributes
         self.root = root
         self.root.title("Calculator")
-        self.root.geometry("300x600")
+        self.root.geometry("400x600")
         self.root.resizable(1, 1)
         self.root.configure(background="white")
         self.root.attributes('-alpha', 0.94)
-        self.root.minsize(150,350)
+        self.root.minsize(150, 350)
 
         # defining data structures
         self.current_expression = ""
@@ -53,7 +53,8 @@ class Calculator:
             self.buttons_frame.rowconfigure(x, weight=1)
             self.buttons_frame.columnconfigure(x, weight=1)
 
-        self.is_first_press = False
+        self.is_first_press = True
+        self.error = False
 
     # creates display_frame that will hold display labels.
     def create_display_frame(self):
@@ -84,16 +85,22 @@ class Calculator:
         self.create_equals_button()
 
     def add_to_label(self, value):
-        if not self.is_first_press:
-            self.is_first_press = True
+        if self.is_first_press:
+            self.is_first_press = False
             self.current_expression_base += str(self.sum_result)
+        if self.error:
+            self.current_expression = ""
+            self.current_expression_base = ""
+            self.update_label()
+            self.update_sum_label()
+            self.error=False
         self.current_expression += str(value) # adds digit to displayed expression as typing
         self.current_expression_base += str(value) # adds digit to expression with non unicode operators for math
         self.update_label() # calls update_label, changes label text to current_expression with fancy unicode
 
     def append_operator(self, symbol, operator):
-        if not self.is_first_press:
-            self.is_first_press = True
+        if self.is_first_press:
+            self.is_first_press = False
             self.current_expression_base += str(self.sum_result)  # previous result added to start for math BIMDAS
 
         self.current_expression += (" "+symbol+" ") # operator added to expression you see as you type (unicode)
@@ -140,12 +147,20 @@ class Calculator:
         button.grid(row=4, column=3, columnspan=2, sticky=tk.NSEW)
 
     def equals_button_true(self):
-        self.sum_result = eval(self.current_expression_base)
-        self.current_expression = str(eval(self.current_expression_base))
-        self.update_sum_label()
-        self.current_expression_base = ""
-        self.update_label()
-        self.is_first_press = False
+        try:
+            self.sum_result = eval(self.current_expression_base)
+            self.current_expression = str(eval(self.current_expression_base))
+            self.current_expression = self.current_expression[:8]
+            self.update_sum_label()
+            self.current_expression_base = ""
+        except:
+            self.current_expression = "Syntax Error"
+            self.current_expression_base = ""
+            self.update_sum_label()
+            self.error=True
+        finally:
+            self.update_label()
+            self.is_first_press = True
 
 
 
@@ -161,7 +176,7 @@ class Calculator:
         self.sum_label.config(text=self.current_expression_base)
 
     def update_label(self):
-        self.label.config(text=self.current_expression[:11])
+        self.label.config(text=self.current_expression)
 
 root = tk.Tk()  # creating window
 calculator = Calculator(root)  # creating object of class by passing window.
