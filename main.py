@@ -55,6 +55,7 @@ class Calculator:
 
         self.is_first_press = True
         self.error = False
+        self.percentage_val = 0
 
     # creates display_frame that will hold display labels.
     def create_display_frame(self):
@@ -82,6 +83,7 @@ class Calculator:
         self.create_digit_buttons()
         self.create_operator_buttons()
         self.create_clear_button()
+        self.create_percent_button()
         self.create_equals_button()
 
     def add_to_label(self, value):
@@ -102,10 +104,10 @@ class Calculator:
         if self.is_first_press:
             self.is_first_press = False
             self.current_expression_base += str(self.sum_result)  # previous result added to start for math BIMDAS
-
-        self.current_expression += (" "+symbol+" ") # operator added to expression you see as you type (unicode)
-        self.current_expression_base += (" "+operator+" ") #operator added not unicode
-        self.update_label()
+        if self.error == False:
+            self.current_expression += (" "+symbol+" ") # operator added to expression you see as you type (unicode)
+            self.current_expression_base += (" "+operator+" ") #operator added not unicode
+            self.update_label()
 
     # Creates display labels that display the summation and the expression on seperate lines.
     def create_display_labels(self):
@@ -138,7 +140,7 @@ class Calculator:
     def create_clear_button(self):
         button = tk.Button(self.buttons_frame, text="C", highlightbackground=WHITE,
                            fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1, command=lambda: self.clear_button_true())
-        button.grid(row=0, column=1, columnspan=3, sticky=tk.NSEW)
+        button.grid(row=0, column=1, columnspan=2, sticky=tk.NSEW)
 
     # creates equals button
     def create_equals_button(self):
@@ -146,12 +148,44 @@ class Calculator:
                            fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=0, command=lambda: self.equals_button_true())
         button.grid(row=4, column=3, columnspan=2, sticky=tk.NSEW)
 
+    def create_percent_button(self):
+        button = tk.Button(self.buttons_frame, text="\u0025", highlightbackground=CREAM,
+                               fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1, command=lambda: self.percentage())
+        button.grid(row=0, column=3, columnspan=1, sticky=tk.NSEW)
+
+    def percentage(self):
+        if self.error == False:
+            try:
+                if self.sum_result == "":
+                    self.is_first_press = True
+                    self.percentage_val = eval(self.current_expression_base) / 100
+                    self.current_expression = self.percentage_val
+                    self.current_expression = str(self.current_expression)[:12]
+                    self.current_expression_base = ''
+                    self.update_label()
+                    self.update_sum_label()
+                    self.sum_result = str(self.current_expression)
+
+                else:
+                    self.is_first_press = True
+                    self.sum_result = float(self.sum_result) / 100
+                    self.current_expression = (format(self.sum_result, '.12f')).rstrip('0') # formats the scientific notation to standard notation so that the calculator displays precise value
+                    self.update_label()
+                    self.update_sum_label()
+
+            except:
+                self.current_expression = ""
+                self.update_sum_label()
+                self.current_expression = "Syntax Error"
+                self.update_label()
+                self.error = True
+
     def equals_button_true(self):
         try:
+            self.update_sum_label()
             self.sum_result = eval(self.current_expression_base)
             self.current_expression = str(eval(self.current_expression_base))
             self.current_expression = self.current_expression[:8]
-            self.update_sum_label()
             self.current_expression_base = ""
         except:
             self.current_expression = "Syntax Error"
@@ -173,7 +207,7 @@ class Calculator:
         self.update_sum_label()
 
     def update_sum_label(self):
-        self.sum_label.config(text=self.current_expression_base)
+        self.sum_label.config(text=self.current_expression)
 
     def update_label(self):
         self.label.config(text=self.current_expression)
