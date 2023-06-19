@@ -23,11 +23,14 @@ class Calculator:
         self.root.geometry("300x600")
         self.root.resizable(1, 1)
         self.root.configure(background="white")
-        root.attributes('-alpha', 0.94)
+        self.root.attributes('-alpha', 0.94)
+        self.root.minsize(150,350)
 
         # defining data structures
         self.sum_expression = ""
         self.current_expression = ""
+        self.current_expression_base = ""
+        self.sum_result = ""
         self.digits = {
             7: (1, 1), 8: (1, 2), 9: (1, 3),
             4: (2, 1), 5: (2, 2), 6: (2, 3),
@@ -81,6 +84,14 @@ class Calculator:
 
     def add_to_label(self, value):
         self.current_expression += str(value)
+        self.current_expression_base += str(value)
+        self.update_label()
+
+    def append_operator(self, symbol, operator):
+        self.current_expression += (" "+symbol+" ")
+        self.current_expression_base += str(self.sum_result)
+        self.current_expression_base += (" "+operator+" ")
+        self.update_sum_label()
         self.update_label()
 
     # Creates display labels that display the summation and the expression on seperate lines.
@@ -99,7 +110,7 @@ class Calculator:
         i = 0
         for operator, symbol in self.operations.items():
             button = tk.Button(self.buttons_frame, text=symbol, highlightbackground=CREAM,
-                               fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1, command=lambda i=symbol: self.add_to_label(i))
+                               fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1, command=lambda i=symbol, j=operator: self.append_operator(i,j))
             button.grid(row=i, column=4, sticky=tk.NSEW)
             i += 1
 
@@ -123,16 +134,21 @@ class Calculator:
         button.grid(row=4, column=3, columnspan=2, sticky=tk.NSEW)
 
     def equals_button_true(self):
-        self.sum_expression = self.current_expression
-        self.current_expression=""
+        self.sum_expression = self.current_expression_base
+        self.sum_result = eval(self.sum_expression)
+        self.current_expression = str(eval(self.sum_expression))
+        self.current_expression_base = ""
         self.update_label()
         self.update_sum_label()
 
     def clear_button_true(self):
         self.current_expression=""
+        self.current_expression_base = ""
         self.sum_expression=""
+        self.sum_result=""
         self.update_label()
         self.update_sum_label()
+
     def update_sum_label(self):
         self.sum_label.config(text=self.sum_expression)
 
