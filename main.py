@@ -14,6 +14,45 @@ LABEL_COLOUR = "#25265E"
 LIGHT_GRAY = "#F5F5F5"
 LIGHT_BLUE = "#CCEDFF"
 
+class QuizPage:
+    def __init__(self, quiz_window):
+        quiz_window.title("Quiz Page")
+        quiz_window.configure(background="white")
+
+
+class HomePage:
+    def __init__(self, main_window):
+        main_window.title("Home Page")
+        main_window.configure(background="white")
+        main_window.minsize(300, 350)
+
+        main_window.columnconfigure(0, weight=1)
+        main_window.rowconfigure(0, weight=1)
+        main_window.rowconfigure(1, weight=1)
+
+
+        self.create_calculator_button()
+        self.create_quiz_button()
+
+
+    def call_calculator(self):
+        root = tk.Tk()  # creating window
+        calculator = Calculator(root)  # creating object of class by passing window.
+        root.mainloop()
+
+    def create_calculator_button(self):
+        button = tk.Button(main_window, text="Calculator", command=lambda:self.call_calculator())
+        button.grid(sticky="ew")
+
+    def create_quiz_button(self):
+        button = tk.Button(main_window, text="Quiz page", command=lambda:self.create_quiz_window())
+        button.grid(sticky="ew")
+
+    def create_quiz_window(self):
+        quiz_window= tk.Tk()
+        quizpage1 = QuizPage(quiz_window)
+        quiz_window.mainloop()
+
 
 class Calculator:
     def __init__(self, root):
@@ -22,7 +61,7 @@ class Calculator:
         self.root.title("Calculator")
         self.root.geometry("400x600")
         self.root.resizable(1, 1)
-        self.root.configure(background="white")
+        self.root.configure(background="black")
         self.root.attributes('-alpha', 0.94)
         self.root.minsize(150, 350)
 
@@ -212,6 +251,7 @@ class Calculator:
     def update_label(self):
         self.label.config(text=self.current_expression)
 
-root = tk.Tk()  # creating window
-calculator = Calculator(root)  # creating object of class by passing window.
-root.mainloop()
+main_window = tk.Tk()
+page = HomePage(main_window)
+main_window.mainloop()
+
