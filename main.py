@@ -1,6 +1,7 @@
 # 91906 Calculator Ice Smith 2023
 
 import tkinter as tk
+import PIL
 
 # Defining Constants that define font, size and weight.
 DEFAULT_FONT_STYLE = ("Arial", 24)
@@ -14,44 +15,101 @@ LABEL_COLOUR = "#25265E"
 LIGHT_GRAY = "#F5F5F5"
 LIGHT_BLUE = "#CCEDFF"
 
+
+class HomePage:
+    def __init__(self, main_window):
+        self.main_window = main_window
+        self.quiz_window = None
+        self.root = None
+        self.main_window.title("Home Page")
+        self.main_window.configure(background="white")
+        self.main_window.minsize(300, 350)
+
+        main_window.columnconfigure(0, weight=1)
+        main_window.rowconfigure(0, weight=1)
+
+
+        self.top_frame = tk.Frame(main_window, bg="cornflowerblue")
+        self.top_frame.grid(column=0, row=0, sticky="nsew")
+        self.button_frame = tk.Frame(main_window)
+        self.button_frame.grid(column=0, row=1, sticky="nsew")
+
+        self.button_frame.columnconfigure(0, weight=1)
+        for i in range(3):
+            self.button_frame.rowconfigure(i, weight=1)
+
+        self.create_calculator_button()
+        self.create_quiz_button()
+        self.create_quit_button()
+
+        self.main_window.columnconfigure(0, weight=1)
+
+        self.create_text()
+
+    def create_text(self):
+        title = tk.Label(self.top_frame, text="Leap Frog Education", font=LARGE_FONT, bg="cornflowerblue", fg="white")
+        title.grid(padx=10)
+
+    def call_calculator(self):
+        #if self.root.state() == "disabled":
+        #if self.root.winfo_exists:
+        try:
+            if self.root != None:
+                self.root.destroy()
+            self.root = tk.Tk() # creating window
+            self.calculator = Calculator(self.root)  # creating object of class by passing window.
+            self.root.mainloop()
+        except:
+            self.root = tk.Tk()  # creating window
+            self.calculator = Calculator(self.root)  # creating object of class by passing window.
+            self.root.mainloop()
+
+    def create_quit_button(self):
+        button = tk.Button(self.button_frame, text="Quit Windows", command=lambda: self.quit_windows())
+        button.grid(sticky="ew")
+
+    def quit_windows(self):
+        self.main_window.destroy()
+        try:
+            self.quiz_window.destroy()
+        except:
+            pass
+        try:
+            self.root.destroy()
+        except:
+            pass
+
+    def create_calculator_button(self):
+        button = tk.Button(self.button_frame, text="Calculator", command=lambda:self.call_calculator())
+        button.grid(sticky="ew")
+
+    def create_quiz_button(self):
+        button = tk.Button(self.button_frame, text="Quiz page", command=lambda:self.create_quiz_window())
+        button.grid(sticky="ew")
+
+    def create_quiz_window(self):
+        try:
+            if self.quiz_window != None:
+                self.quiz_window.destroy()
+            self.quiz_window= tk.Tk()
+            self.quizpage1 = QuizPage(self.quiz_window)
+            self.quiz_window.mainloop()
+        except:
+            self.quiz_window= tk.Tk()
+            self.quizpage1 = QuizPage(self.quiz_window)
+            self.quiz_window.mainloop()
+
+
+
 class QuizPage:
     def __init__(self, quiz_window):
         quiz_window.title("Quiz Page")
         quiz_window.configure(background="white")
 
-
-class HomePage:
-    def __init__(self, main_window):
-        main_window.title("Home Page")
-        main_window.configure(background="white")
-        main_window.minsize(300, 350)
-
-        main_window.columnconfigure(0, weight=1)
-        main_window.rowconfigure(0, weight=1)
-        main_window.rowconfigure(1, weight=1)
+        quiz_window.columnconfigure(0, weight=1)
+        quiz_window.rowconfigure(1, weight=1)
 
 
-        self.create_calculator_button()
-        self.create_quiz_button()
-
-
-    def call_calculator(self):
-        root = tk.Tk()  # creating window
-        calculator = Calculator(root)  # creating object of class by passing window.
-        root.mainloop()
-
-    def create_calculator_button(self):
-        button = tk.Button(main_window, text="Calculator", command=lambda:self.call_calculator())
-        button.grid(sticky="ew")
-
-    def create_quiz_button(self):
-        button = tk.Button(main_window, text="Quiz page", command=lambda:self.create_quiz_window())
-        button.grid(sticky="ew")
-
-    def create_quiz_window(self):
-        quiz_window= tk.Tk()
-        quizpage1 = QuizPage(quiz_window)
-        quiz_window.mainloop()
 
 
 class Calculator:
