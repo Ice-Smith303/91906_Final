@@ -1,7 +1,7 @@
 # 91906 Calculator Ice Smith 2023
 
+import random
 import tkinter as tk
-import PIL
 
 # Defining Constants that define font, size and weight.
 DEFAULT_FONT_STYLE = ("Arial", 24)
@@ -15,6 +15,8 @@ LABEL_COLOUR = "#25265E"
 LIGHT_GRAY = "#F5F5F5"
 LIGHT_BLUE = "#CCEDFF"
 
+QUESTION_1 = "Solve the equation"
+
 
 class HomePage:
     def __init__(self, main_window):
@@ -27,7 +29,6 @@ class HomePage:
 
         main_window.columnconfigure(0, weight=1)
         main_window.rowconfigure(0, weight=1)
-
 
         self.top_frame = tk.Frame(main_window, bg="cornflowerblue")
         self.top_frame.grid(column=0, row=0, sticky="nsew")
@@ -51,12 +52,12 @@ class HomePage:
         title.grid(padx=10)
 
     def call_calculator(self):
-        #if self.root.state() == "disabled":
-        #if self.root.winfo_exists:
+        # if self.root.state() == "disabled":
+        # if self.root.winfo_exists:
         try:
             if self.root != None:
                 self.root.destroy()
-            self.root = tk.Tk() # creating window
+            self.root = tk.Tk()  # creating window
             self.calculator = Calculator(self.root)  # creating object of class by passing window.
             self.root.mainloop()
         except:
@@ -80,35 +81,70 @@ class HomePage:
             pass
 
     def create_calculator_button(self):
-        button = tk.Button(self.button_frame, text="Calculator", command=lambda:self.call_calculator())
+        button = tk.Button(self.button_frame, text="Calculator", command=lambda: self.call_calculator())
         button.grid(sticky="ew")
 
     def create_quiz_button(self):
-        button = tk.Button(self.button_frame, text="Quiz page", command=lambda:self.create_quiz_window())
+        button = tk.Button(self.button_frame, text="Quiz page", command=lambda: self.create_quiz_window())
         button.grid(sticky="ew")
 
     def create_quiz_window(self):
         try:
             if self.quiz_window != None:
                 self.quiz_window.destroy()
-            self.quiz_window= tk.Tk()
+            self.quiz_window = tk.Tk()
             self.quizpage1 = QuizPage(self.quiz_window)
             self.quiz_window.mainloop()
         except:
-            self.quiz_window= tk.Tk()
+            self.quiz_window = tk.Tk()
             self.quizpage1 = QuizPage(self.quiz_window)
             self.quiz_window.mainloop()
-
 
 
 class QuizPage:
     def __init__(self, quiz_window):
         quiz_window.title("Quiz Page")
         quiz_window.configure(background="white")
+        quiz_window.resizable(0, 0)
+
+        top_label = tk.Label(quiz_window, text="Solve the Equations:\n", background="white", fg="black",
+                             font=DEFAULT_FONT_STYLE)
+        top_label.grid(row=0, sticky="nsew", padx=50, columnspan=2)
+
+        self.entry_frame = tk.Frame(quiz_window, background="white", width = 100)
+        self.entry_frame.grid(row=1, column=1, sticky="nsew")
+
+        self.quest_frame = tk.Frame(quiz_window, background="white")
+        self.quest_frame.grid(row = 1, column = 0, sticky="nsew")
+        self.question_maker(self.quest_frame)
+        self.entry_maker(self.entry_frame)
+
 
         quiz_window.columnconfigure(0, weight=1)
+        quiz_window.columnconfigure(1, weight=1)
+        quiz_window.rowconfigure(0, weight=1)
         quiz_window.rowconfigure(1, weight=1)
 
+
+
+
+
+    def question_maker(self, quest_frame):
+        for i in range(10):
+            randnum1 = random.randint(11, 99)
+            randnum2 = random.randint(11, 99)
+            #final_quest = QUESTION_1 + " " + str(randnum1) + " + " + str(randnum2)
+            question_label = tk.Label(quest_frame, text=(str(randnum1) + " + " + str(randnum2)), background="white", fg="black", font=DEFAULT_FONT_STYLE)
+            question_label.grid(row=i, sticky="nsw", padx=10)
+            quest_frame.rowconfigure(i, weight=1)
+            quest_frame.columnconfigure(0, weight=1)
+
+    def entry_maker(self, entry_frame):
+        for i in range(10):
+            entry_box = tk.Entry(entry_frame, background="white", fg="black")
+            entry_box.grid(row=i, sticky="nsew", padx=10, pady=2)
+            entry_frame.rowconfigure(i, weight=1)
+            entry_frame.columnconfigure(0, weight=1)
 
 
 
@@ -192,18 +228,19 @@ class Calculator:
             self.current_expression_base = ""
             self.update_label()
             self.update_sum_label()
-            self.error=False
-        self.current_expression += str(value) # adds digit to displayed expression as typing
-        self.current_expression_base += str(value) # adds digit to expression with non unicode operators for math
-        self.update_label() # calls update_label, changes label text to current_expression with fancy unicode
+            self.error = False
+        self.current_expression += str(value)  # adds digit to displayed expression as typing
+        self.current_expression_base += str(value)  # adds digit to expression with non unicode operators for math
+        self.update_label()  # calls update_label, changes label text to current_expression with fancy unicode
 
     def append_operator(self, symbol, operator):
         if self.is_first_press:
             self.is_first_press = False
             self.current_expression_base += str(self.sum_result)  # previous result added to start for math BIMDAS
         if self.error == False:
-            self.current_expression += (" "+symbol+" ") # operator added to expression you see as you type (unicode)
-            self.current_expression_base += (" "+operator+" ") #operator added not unicode
+            self.current_expression += (
+                    " " + symbol + " ")  # operator added to expression you see as you type (unicode)
+            self.current_expression_base += (" " + operator + " ")  # operator added not unicode
             self.update_label()
 
     # Creates display labels that display the summation and the expression on seperate lines.
@@ -222,7 +259,8 @@ class Calculator:
         i = 0
         for operator, symbol in self.operations.items():
             button = tk.Button(self.buttons_frame, text=symbol, highlightbackground=CREAM,
-                               fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1, command=lambda i=symbol, j=operator: self.append_operator(i,j))
+                               fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1,
+                               command=lambda i=symbol, j=operator: self.append_operator(i, j))
             button.grid(row=i, column=4, sticky=tk.NSEW)
             i += 1
 
@@ -230,7 +268,8 @@ class Calculator:
     def create_digit_buttons(self):
         for digit, grid_value in self.digits.items():
             button = tk.Button(self.buttons_frame, text=str(digit), highlightbackground=WHITE,
-                               fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1, command=lambda i=digit: self.add_to_label(i))
+                               fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1,
+                               command=lambda i=digit: self.add_to_label(i))
             button.grid(row=grid_value[0], column=grid_value[1], sticky=tk.NSEW)
 
     # creates clear button
@@ -247,11 +286,11 @@ class Calculator:
 
     def create_percent_button(self):
         button = tk.Button(self.buttons_frame, text="\u0025", highlightbackground=CREAM,
-                               fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1, command=lambda: self.percentage())
+                           fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1, command=lambda: self.percentage())
         button.grid(row=0, column=3, columnspan=1, sticky=tk.NSEW)
 
     def percentage(self):
-        if self.error == False:
+        if not self.error:
             try:
                 if self.sum_result == "":
                     self.is_first_press = True
@@ -266,7 +305,8 @@ class Calculator:
                 else:
                     self.is_first_press = True
                     self.sum_result = float(self.sum_result) / 100
-                    self.current_expression = (format(self.sum_result, '.12f')).rstrip('0') # formats the scientific notation to standard notation so that the calculator displays precise value
+                    self.current_expression = (format(self.sum_result, '.12f')).rstrip("0")
+                        # formats the scientific notation to standard notation so that the calculator displays precise value
                     self.update_label()
                     self.update_sum_label()
 
@@ -288,28 +328,25 @@ class Calculator:
             self.current_expression = "Syntax Error"
             self.current_expression_base = ""
             self.update_sum_label()
-            self.error=True
+            self.error = True
         finally:
             self.update_label()
             self.is_first_press = True
 
-
-
-
     def clear_button_true(self):
-        self.current_expression=""
+        self.current_expression = ""
         self.current_expression_base = ""
-        self.sum_result=""
+        self.sum_result = ""
         self.update_label()
         self.update_sum_label()
 
     def update_sum_label(self):
-        self.sum_label.config(text=self.current_expression)
+        self.sum_label.config(text=self.current_expression_base)
 
     def update_label(self):
         self.label.config(text=self.current_expression)
 
+
 main_window = tk.Tk()
 page = HomePage(main_window)
 main_window.mainloop()
-
