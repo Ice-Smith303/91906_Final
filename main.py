@@ -2,10 +2,12 @@
 
 import random
 import tkinter as tk
+import math
 
 # Defining Constants that define font, size and weight.
 DEFAULT_FONT_STYLE = ("Arial", 24)
 LARGE_FONT = ("Arial", 40, "bold")
+TICK_FONT = ("Arial", 28)
 SMALL_FONT = ("Arial", 16)
 DIGITS_FONT = ("Arial", 24, "bold")
 
@@ -106,10 +108,13 @@ class QuizPage:
         quiz_window.title("Quiz Page")
         quiz_window.configure(background="white")
         quiz_window.resizable(0, 0)
+        self.answer_dict = {}
+        self.entries = []
+        self.buttons = {}
 
         top_label = tk.Label(quiz_window, text="Solve the Equations:\n", background="white", fg="black",
                              font=DEFAULT_FONT_STYLE)
-        top_label.grid(row=0, sticky="nsew", padx=50, columnspan=2)
+        top_label.grid(row=0, sticky="nsew", padx=10, columnspan=2)
 
         self.entry_frame = tk.Frame(quiz_window, background="white", width = 100)
         self.entry_frame.grid(row=1, column=1, sticky="nsew")
@@ -118,6 +123,7 @@ class QuizPage:
         self.quest_frame.grid(row = 1, column = 0, sticky="nsew")
         self.question_maker(self.quest_frame)
         self.entry_maker(self.entry_frame)
+        self.entry_button_maker(self.entry_frame)
 
 
         quiz_window.columnconfigure(0, weight=1)
@@ -131,20 +137,47 @@ class QuizPage:
 
     def question_maker(self, quest_frame):
         for i in range(10):
-            randnum1 = random.randint(11, 99)
-            randnum2 = random.randint(11, 99)
+            randnum1 = random.randint(1, 9)
+            randnum2 = random.randint(1, 9)
+            answer = randnum2 + randnum1
+            self.answer_dict[i] = answer # appends answers to answer dictionary
             #final_quest = QUESTION_1 + " " + str(randnum1) + " + " + str(randnum2)
-            question_label = tk.Label(quest_frame, text=(str(randnum1) + " + " + str(randnum2)), background="white", fg="black", font=DEFAULT_FONT_STYLE)
-            question_label.grid(row=i, sticky="nsw", padx=10)
+            question_label = tk.Label(quest_frame, text=(str(randnum1) + " + " + str(randnum2)+" = "), background="white", fg="black", font=DEFAULT_FONT_STYLE)
+            question_label.grid(row=i, column=0, sticky="nsw", pady=2)
             quest_frame.rowconfigure(i, weight=1)
             quest_frame.columnconfigure(0, weight=1)
 
     def entry_maker(self, entry_frame):
         for i in range(10):
-            entry_box = tk.Entry(entry_frame, background="white", fg="black")
-            entry_box.grid(row=i, sticky="nsew", padx=10, pady=2)
+            entry_box = tk.Entry(entry_frame, background="white", insertbackground="black", fg="black", width=3, font=DEFAULT_FONT_STYLE, borderwidth=1)
+            entry_box.grid(row=i, column=1, sticky="nsew", pady=2)
             entry_frame.rowconfigure(i, weight=1)
             entry_frame.columnconfigure(0, weight=1)
+            self.entries.append(entry_box)
+
+
+    def entry_button_maker(self, entry_frame):
+        for i in range(10):
+            label = tk.Label(entry_frame, text="Correct!", fg="black", font=DEFAULT_FONT_STYLE, background="white")
+            label.grid(row=i, column=2, sticky="nsew", padx=10, pady=2)
+            entry_button = tk.Button(entry_frame, text="CHECK", highlightbackground="cornflowerblue", fg="black", width=4, font=SMALL_FONT, borderwidth=1, command=lambda i=i: self.answer_checker(i))
+            entry_button['command'] = lambda i=i, button_inst = entry_button: self.answer_checker(i, button_inst, entry_frame)
+            entry_button.grid(row=i, column=2, sticky="nsew", padx=10, pady=2)
+            entry_frame.rowconfigure(i, weight=1)
+            entry_frame.columnconfigure(0, weight=1)
+            self.buttons[i] = entry_button
+    def answer_checker(self, i, button_inst, entry_frame):
+        if str(self.entries[i].get()) == str(self.answer_dict.get(i)):
+            print("yes")
+            button_inst.destroy()
+            label = tk.Label(entry_frame, text="Correct!", fg="black", font=DEFAULT_FONT_STYLE, background="white")
+            label.grid(row=i, column=2, sticky="nsew", padx=10, pady=2)
+            self.entries[i + 1].focus_set()
+        else:
+            button_inst.configure(highlightbackground="red")
+            self.entries[i].delete(0, tk.END)
+
+
 
 
 
@@ -274,7 +307,7 @@ class Calculator:
 
     # creates clear button
     def create_clear_button(self):
-        button = tk.Button(self.buttons_frame, text="C", highlightbackground=WHITE,
+        button = tk.Button(self.buttons_frame, text="AC", highlightbackground=WHITE,
                            fg=LABEL_COLOUR, font=DIGITS_FONT, borderwidth=1, command=lambda: self.clear_button_true())
         button.grid(row=0, column=1, columnspan=2, sticky=tk.NSEW)
 
