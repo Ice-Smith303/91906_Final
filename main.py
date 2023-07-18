@@ -361,10 +361,13 @@ class Calculator:
 
     def equals_button_true(self):
         try:
+
             self.update_sum_label()
             self.sum_result = eval(self.current_expression_base)
             self.current_expression = str(eval(self.current_expression_base))
-            self.current_expression = self.current_expression[:8]
+            if len(self.current_expression) > 7:
+                print(len(self.current_expression))
+                self.current_expression = "{:e}".format(float(self.current_expression))
             self.current_expression_base = ""
         except:
             self.current_expression = "Syntax Error"
