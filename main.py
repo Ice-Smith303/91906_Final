@@ -33,10 +33,12 @@ class HomePage:
         main_window.rowconfigure(0, weight=1)
 
         self.top_frame = tk.Frame(main_window, bg="cornflowerblue")
+        self.main_window.rowconfigure(0, weight=1)
         self.top_frame.grid(column=0, row=0, sticky="nsew")
         self.button_frame = tk.Frame(main_window)
         self.button_frame.grid(column=0, row=1, sticky="nsew")
 
+        self.top_frame.rowconfigure(2, weight=1)
         self.button_frame.columnconfigure(0, weight=1)
         for i in range(3):
             self.button_frame.rowconfigure(i, weight=1)
@@ -45,13 +47,17 @@ class HomePage:
         self.create_quiz_button()
         self.create_quit_button()
 
-        self.main_window.columnconfigure(0, weight=1)
+
 
         self.create_text()
 
     def create_text(self):
         title = tk.Label(self.top_frame, text="Leap Frog Education", font=LARGE_FONT, bg="cornflowerblue", fg="white")
-        title.grid(padx=10)
+        title2 = tk.Label(self.top_frame, text="Ice Smith - 2023", font=SMALL_FONT, bg="cornflowerblue", fg="white")
+        version = tk.Label(self.top_frame, text="V1.0", font=SMALL_FONT, bg="cornflowerblue", fg="white")
+        title.grid(padx=10, sticky="nw")
+        title2.grid(padx=10, sticky="nw")
+        version.grid(padx=10, sticky="sw")
 
     def call_calculator(self):
         # if self.root.state() == "disabled":
@@ -112,7 +118,7 @@ class QuizPage:
         self.entries = []
         self.buttons = {}
 
-        top_label = tk.Label(quiz_window, text="Solve the Equations:\n", background="white", fg="black",
+        top_label = tk.Label(quiz_window, text="Welcome to the quiz\nSolve the Equations:\n", background="white", fg="black",
                              font=DEFAULT_FONT_STYLE)
         top_label.grid(row=0, sticky="nsew", padx=10, columnspan=2)
 
@@ -168,11 +174,14 @@ class QuizPage:
             self.buttons[i] = entry_button
     def answer_checker(self, i, button_inst, entry_frame):
         if str(self.entries[i].get()) == str(self.answer_dict.get(i)):
-            print("yes")
+            print("debugger check")
             button_inst.destroy()
             label = tk.Label(entry_frame, text="Correct!", fg="black", font=DEFAULT_FONT_STYLE, background="white")
             label.grid(row=i, column=2, sticky="nsew", padx=10, pady=2)
-            self.entries[i + 1].focus_set()
+            try:
+                self.entries[i + 1].focus_set()
+            except:
+                pass
         else:
             button_inst.configure(highlightbackground="red")
             self.entries[i].delete(0, tk.END)
